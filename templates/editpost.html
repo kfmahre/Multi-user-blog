@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row container login-container">
+  <div>
+    <h3 class="text-xs-center lead">Edit post</h3>
+  </div>
+  <div>
+    <form method="post" role="form">
+      <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
+      <div class="form-group">
+        <label for="subject">Subject:</label>
+        <input type="text" class="form-control" id="subject" name="subject" value="{{subject}}">
+      </div>
+      <div class="form-group">
+        <label for="content">Content:</label>
+        <textarea class="form-control" id="content" name="content" value="{{content}}" rows="10">{{content}}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+      <a href="#" onclick="blog()" class="btn btn-primary">Cancel/Back</a>
+    </form>
+    <div class="row">
+      {% if error %}
+        <p class="alert alert-warning alert-heading">{{error}}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

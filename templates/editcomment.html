@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row container login-container">
+  <div>
+    <h2 class="text-xs-center lead">Edit comment</h2>
+  </div>
+  <div>
+    <form method="post" role="form">
+      <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
+        <div class="form-group">
+          <label for="subject">Comment:</label>
+          <input type="text" class="form-control" id="comment" name="comment" value="{{comment}}">
+        </div>
+        {% if error %}
+        <div class="row">
+          <p class="alert alert-warning alert-heading">{{error}}</p>
+        </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

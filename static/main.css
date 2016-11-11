@@ -1,0 +1,147 @@
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    width: 80%;
+    margin: auto 10%;
+    padding: 10px;
+    color: #333;
+}
+
+.login-container {
+    margin-top: 10%;
+    border: 4px solid #E0E0E0;
+    padding: 2%;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    box-shadow: 3px 5px 4px #BDBDBD;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.error {
+    color: red;
+}
+
+label {
+  display: block;
+  font-size: 20px;
+}
+
+label + label {
+    margin-top: 20px;
+}
+
+input[type=text] {
+    width: 500px;
+    font-size: 20px;
+}
+
+input[type=password] {
+    width: 500px;
+    font-size: 20px;
+}
+
+textarea {
+  font-size: 20px;
+}
+
+.main-title {
+    display: block;
+    text-align: center;
+    margin-bottom: 30px;
+    text-decoration: none;
+    text-shadow: 1px 1px 2px grey;
+    opacity: 0.8;
+}
+
+.main-title:hover {
+    opacity: 1;
+    text-decoration: none;
+    text-shadow: 1px 1px 5px grey;
+}
+
+.post + .post {
+    margin-top: 15px;
+}
+
+.post-heading {
+    position: relative;
+    border-bottom: 3px solid #666;
+}
+
+.post-title {
+
+}
+
+.post-date {
+    font-size: 14px;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    color: #999;
+}
+
+.post-content {
+    margin-top: 5px;
+}
+
+.btn-group {
+    padding: 2%;
+}
+
+.btn-primary {
+    color: black;
+    background-color: transparent;
+    border: 2px solid black;
+}
+
+.btn-primary:active {
+    color: black;
+    background-color: transparent;
+    border: 2px solid black;
+}
+
+.btn-primary:hover {
+    color: white;
+    background-color: black;
+    border: 2px solid grey;
+    -webkit-transition: background 0.2s;
+    transition: background 0.2s;
+}
+
+a.btn-primary:hover {
+    color: white;
+    -webkit-transition: background 0.2s;
+    transition: background 0.2s;
+}
+
+.comment-textarea {
+    width: 100%;
+}
+
+.new-post-container {
+    margin-top: 10%;
+    border: 4px solid #E0E0E0;
+    padding: 2%;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    box-shadow: 3px 5px 4px #BDBDBD;
+}
+
+.comment {
+    font-size: 14px;
+}
+
+.comment-footer {
+    font-size: 12px;
+}
+
+.green {
+    color: #64DD17;
+}

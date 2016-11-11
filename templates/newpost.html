@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container new-post-container">
+    <form method="post">
+      <h2 class="lead">New post:</h2>
+      <div class="form-group row">
+        <label for="sub_input" class="col-xs-2 col-form-label">Subject:</label>
+        <div class="col-xs-10">
+          <input id="sub_input" type="text" name="subject" value="{{subject}}">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="content_input" class="col-xs-2 col-form-label">Content:</label>
+        <div class="col-xs-10">
+          <textarea name="content" id="content_input">{{content}}</textarea>
+        </div>
+      </div>
+      <div class="error container">
+        {% if error %}
+          <p class="alert alert-warning alert-heading">{{error}}</p>
+        {% endif %}
+      </div>
+      <div class="btn-group row">
+        <input class="btn btn-primary" type="submit">
+        <a href="#" class="btn btn-primary" onclick="blog()"> Back to Blog</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

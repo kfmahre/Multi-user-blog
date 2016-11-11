@@ -1,0 +1,13 @@
+<div class="post">
+  <div class="post-heading">
+    <div class="post-title">
+      <a class="lead" href="/blog/{{p.key().id()}}#">{{p.subject}}</a>
+    </div>
+    <div class="post-date">
+      Posted on: {{p.created.strftime("%b %d, %Y")}} By: <b>{{p.findUser()}}</b> Post id: <b>{{p.key().id()}}</b>
+    </div>
+  </div>
+  <div class="post-content">
+    {{p._render_text | safe}}
+  </div>
+</div>
