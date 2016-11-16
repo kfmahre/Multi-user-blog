@@ -24,8 +24,10 @@
           <a href="#" class="btn btn-primary" onclick="signUp()">Sign up</a>
         </div>
       </form>
-      <div class="row text-xs-center">
-        <p class="error">{{error}}</p>
+      <div class="row container">
+        {% if error %}
+          <p class="alert alert-warning alert-heading">{{error}}</p>
+        {% endif %}
       </div>
     </div>
   </div>

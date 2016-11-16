@@ -15,49 +15,41 @@
   {% endblock %}
   </div>
 
-      <script type="text/javascript">
+    <script type="text/javascript">
       // when deployed: https://aerobic-entropy-140704.appspot.com/
-      // in development: http://localhost:10081/
-      var home = 'https://aerobic-entropy-140704.appspot.com/'
+      var local = 'http://localhost:10081/'
+      var deployed = 'https://aerobic-entropy-140704.appspot.com/'
 
       function blog() {
-        window.location.href = home + "blog/"
+        if(window.location.toString().indexOf('https://aerobic-entropy-140704' +
+          '.appspot.com/') != -1) { window.location.href = deployed + "blog/" }
+          else { window.location.href = local + "blog/" }
       };
 
       function newpost() {
-        window.location.href = home + 'blog/newpost'
+        if(window.location.toString().indexOf('https://aerobic-entropy-140704' +
+          '.appspot.com/') != -1) {window.location.href = deployed + 'blog/ne' +
+          'wpost'} else { window.location.href = local + 'blog/newpost'}
       };
 
       function logout() {
-        window.location.href = home + 'logout'
+        if(window.location.toString().indexOf('https://aerobic-entropy-140704' +
+          '.appspot.com/') != -1) {window.location.href = deployed + 'logout'}
+          else { window.location.href = local + 'logout'}
       };
 
       function login() {
-        window.location.href = home + 'login'
+        if(window.location.toString().indexOf('https://aerobic-entropy-140704' +
+          '.appspot.com/') != -1) {window.location.href = deployed + 'login'}
+          else { window.location.href = local + 'login'}
       };
 
       function signUp() {
-        window.location.href = home + 'signup'
-      }
-
-      function permalink() {
-        window.location.href = home + 'permalink'
-      }
-/*
-      var home = 'http://localhost:10081/'
-
-      function blog() {
-        window.location.href = home + "blog/"
+        if(window.location.toString().indexOf('https://aerobic-entropy-140704' +
+          '.appspot.com/') != -1) {window.location.href = deployed + 'signup'}
+          else { window.location.href = local + 'signup'}
       };
 
-      function newpost() {
-        window.location.href = home + 'blog/newpost'
-      };
-
-      function logout() {
-        window.location.href = home + 'logout'
-      };
-*/
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js" integrity="sha384-THPy051/pYDQGanwU6poAc/hOdQxjnOEXzbT+OuUAFqNqFjL+4IGLBgCJC3ZOShY" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.2.0/js/tether.min.js" integrity="sha384-Plbmg8JY28KFelvJVai01l8WyZzrYWG825m+cZ0eDDS1f7d/js6ikvy1+X+guPIB" crossorigin="anonymous"></script>
