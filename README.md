@@ -4,7 +4,8 @@
 https://aerobic-entropy-140704.appspot.com/
 
 ### Steps to run locally:
-Download this repository and run this app using google app engine
+Download this repository and run this app using google app engine.
+[Download it Here](https://cloud.google.com/appengine/downloads)
 
 ## Important settings:
 localhost must be set to 10081 or else some of the buttons will not work properly

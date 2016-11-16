@@ -15,71 +15,94 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
 secret = 'FireAndBlood'
-# when bugs are fixed I intend to let all users see who else is logged in
-# logged_in = []
 
 
-# currently unused function that changes a list to a string
 def string_list(change):
-    return str(change).replace('[','').replace(']','').replace("'"," ")
+    """
+    string_list: function that changes a list to a string, currently unused
+    """
+    return str(change).replace('[', '').replace(']', '').replace("'", " ")
 
 
-# takes templates and renders html
 def render_str(template, **params):
+    """
+    render_str: takes templates and renders html
+    """
     t = jinja_env.get_template(template)
     return t.render(params)
 
 
-# uses the variable secret to make a secure value
 def make_secure_val(val):
+    """
+    make_secure_val: uses the variable secret to make val secure
+    """
     return "%s|%s" % (val, hmac.new(secret, val).hexdigest())
 
 
 # verification of the secure value vs secret
 def check_secure_val(h):
+    """
+    check_secure_val: compares h to
+    """
     val = h.split('|')[0]
     if h == make_secure_val(val):
         return val
 
 
-# Handler Class, uses webapp2.RequestHandler and its helper methods
 class Handler(webapp2.RequestHandler):
-    # writes output to client
+    """
+    Handler: uses webapp2.RequestHandler and its helper methods
+    """
     def write(self, *a, **kw):
+        """
+        write: writes output to client
+        """
         self.response.out.write(*a, **kw)
 
-    # renders HTML using template
     def render_str(self, template, **params):
+        """
+        render_str: renders HTML using template
+        """
         params['user'] = self.user
         return render_str(template, **params)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    # sets the browser's cookie
     def set_secure_cookie(self, name, val):
+        """
+        set_secure_cookie: sets the browser's cookie
+        """
         cookie_val = make_secure_val(val)
         self.response.headers.add_header(
             'Set-Cookie',
             '%s=%s; Path=/' % (name, cookie_val))
 
-    # reads the broswer's cookie
     def read_secure_cookie(self, name):
+        """
+        read_secure_cookie: reads the broswer's cookie
+        """
         cookie_val = self.request.cookies.get(name)
         return cookie_val and check_secure_val(cookie_val)
 
-    # makes a secure cookie according to user ID
     def login(self, user):
+        """
+        login: makes a secure cookie according to user ID
+        """
         self.set_secure_cookie('user_id', str(user.key().id()))
 
-    # removes login credentials from browser's cookie
     def logout(self):
+        """
+        logout: removes login credentials from browser's cookie
+        """
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
 
-    # verification of credentials by reading browser cookie data
     def initialize(self, *a, **kw):
+        """
+        initialize: verifies credentials by reading browser cookie data
+        """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
@@ -89,8 +112,8 @@ def render_post(response, post):
     response.out.write('<b>' + post.subject + '</b><br>')
     response.out.write(post.content)
 
-# this html string establishes a link to the blog front from the landing page,
-# which I intend to do a little more with
+# This html string establishes a link to the blog front from the landing page,
+# which I intend to do a little more with later
 land_html = """
 <body>
 <button style="position:absolute;top:45%;right:40%;" onclick="blog()">
@@ -104,8 +127,10 @@ function blog() {
 </script>
 </body>
 """
-# these two strings add a button that appears and changes in function depending
-# on if a user is logged in
+"""
+These two strings add a button that appears and changes in function depending
+on if a user is logged in or not.
+"""
 logout_html = """
 <a href="#" class="btn btn-primary" onclick="logout()">Logout</a>
 """
@@ -114,8 +139,11 @@ login_html = """
 <a href="#" class="btn btn-primary" onclick="login()">Login</a>
 """
 
-# handler for landing page, writes the html above with a link to blog
+
 class LandPage(Handler):
+    """
+    LandPage: writes land_html
+    """
     def get(self):
         self.write(land_html)
 
@@ -145,8 +173,10 @@ def findUser(self):
     return user.name
 
 
-# User class
 class User(db.Model):
+    """
+    User: name, pw_hash, email properties
+    """
     name = db.StringProperty(required=True)
     pw_hash = db.StringProperty(required=True)
     email = db.StringProperty()
@@ -178,8 +208,11 @@ class User(db.Model):
             return u
 
 
-# Post class
 class Post(db.Model):
+    """
+    Post: subject, content, created, last_modified, user_id, and username
+    properties.
+    """
     subject = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
@@ -196,8 +229,10 @@ class Post(db.Model):
         return user.name
 
 
-# comment class, much like post class, but also has a post_id property
 class Comment(db.Model):
+    """
+    Comment: like posts, but also has a post_id property
+    """
     comment = db.TextProperty(required=True)
     user_id = db.IntegerProperty(required=True)
     post_id = db.IntegerProperty(required=True)
@@ -209,8 +244,10 @@ class Comment(db.Model):
         return user.name
 
 
-# Like class, has user and post properties to track identities
 class Like(db.Model):
+    """
+    Like: has user and post properties to track identities
+    """
     user_id = db.IntegerProperty(required=True)
     post_id = db.IntegerProperty(required=True)
 
@@ -223,26 +260,29 @@ def blog_key(name='default'):
     return db.Key.from_path('blogs', name)
 
 
-# front class uses Handler and its methods
 class BlogFront(Handler):
+    """
+    BlogFront: uses Handler and it's methods to display front.html
+    """
     def get(self):
         logout = self.request.get('logout')
         posts = db.GqlQuery("SELECT * FROM Post " +
                             "ORDER BY created DESC limit 10")
         if not self.user:
             self.render('front.html', posts=posts, logout="", login=login_html,
-             you='')
+                        you='')
         else:
             uid = int(self.read_secure_cookie('user_id'))
             user = User.by_id(uid)
             you = user.name
-            self.render('front.html', posts=posts, logout=logout_html, login="",
-             you=you)
-# namelist=string_list(list(set(logged_in))) < future updates bug fix needed
+            self.render('front.html', posts=posts, logout=logout_html,
+                        login="", you=you)
 
 
-# PostPage class uses Handler and it's methods
 class PostPage(Handler):
+    """
+    PostPage: uses Handler and it's methods to display posts
+    """
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
@@ -258,10 +298,15 @@ class PostPage(Handler):
 
         likes = db.GqlQuery("select * from Like where post_id="+post_id)
 
-        self.render("permalink.html", post=post, error=error, comments=comments,
-         likes_count=likes.count())
+        self.render("permalink.html", post=post, error=error,
+                    comments=comments, likes_count=likes.count())
 
     def post(self, post_id):
+        """
+        post: If logged in, user can comment or like a post. If the user's id
+        matches the post's user id, it displays an error msg. If not logged in,
+        redirect to login.
+        """
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
@@ -271,23 +316,19 @@ class PostPage(Handler):
 
         c = ""
 
-# checks if the browser is logged in
         if(self.user):
-            # if so, it allows the user to comment
             if(self.request.get('comment')):
                 c = Comment(parent=blog_key(), user_id=self.user.key().id(),
                             post_id=int(post_id),
                             comment=self.request.get('comment'))
                 c.put()
 
-            # if so, is also allows the user to like a post
             if(self.request.get('like') and
                self.request.get('like') == "update"):
                 likes = db.GqlQuery("select * from Like where post_id = " +
                                     post_id + " and user_id = " +
                                     str(self.user.key().id()))
 
-                # if the user's id matched the post's user id, throws an error
                 if self.user.key().id() == post.user_id:
                     self.redirect("/blog/" + post_id +
                                   "?error=Sorry, you can't like your " +
@@ -297,7 +338,6 @@ class PostPage(Handler):
                     l = Like(parent=blog_key(), user_id=self.user.key().id(),
                              post_id=int(post_id))
                     l.put()
-# if not, it redirects to login
         else:
             self.redirect("/login?error=Please login...")
             return
@@ -308,20 +348,28 @@ class PostPage(Handler):
         likes = db.GqlQuery("select * from Like where post_id="+post_id)
 
         self.render("permalink.html", post=post, comments=comments,
-            likes_count=likes.count(), new=c)
+                    likes_count=likes.count(), new=c)
 
 
-# NewPost class uses handler and it's methods
 class NewPost(Handler):
+    """
+    NewPost: uses handler and it's methods to create new posts
+    """
     def get(self):
-        # if a user it renders the template
+        """
+        get: Render newpost if logged in, if not logged in,
+        redirect to login
+        """
         if self.user:
             self.render("newpost.html")
-            # if not regirects to login
         else:
             self.redirect("/login?error=Please login...")
 
     def post(self):
+        """
+        post: If not logged in, redirects back to blog. Creates new post if
+        there is a subject and content when submitted.
+        """
         if not self.user:
             self.redirect('/blog')
 
@@ -333,14 +381,13 @@ class NewPost(Handler):
             self.user = uid and User.by_id(int(uid))
             u = str(self.user.name)
             p = Post(parent=blog_key(), subject=subject, content=content,
-                         user_id=uid, username=u)
+                     user_id=uid, username=u)
             p.put()
             self.redirect("/blog/%s" % str(p.key().id()))
         else:
             error = "Each post requires a subject and an content!"
             self.render("newpost.html", subject=subject, content=content,
                         error=error)
-
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -363,12 +410,21 @@ def valid_email(email):
     return not email or EMAIL_RE.match(email)
 
 
-# Signup class uses handler and it's methods to help Register make new users
 class Signup(Handler):
+    """
+    Signup: uses Handler and its methods to help Register make new users.
+    """
     def get(self):
+        """
+        get: render signup-form
+        """
         self.render("signup-form.html")
 
     def post(self):
+        """
+        post: takes values and compares them to parameters, that, if they pass
+        conditions, will allow a user to register.
+        """
         have_error = False
         self.username = self.request.get('username')
         self.password = self.request.get('password')
@@ -402,15 +458,19 @@ class Signup(Handler):
         raise NotImplementedError
 
 
-# Register class, uses Signup class and it's methods to create new users
 class Register(Signup):
+    """
+    Register: uses Signup class and it's methods to create new users
+    """
     def done(self):
-        # if the a user already has that name displays the error msg
+        """
+        done: If a user already has the chosen name, display an error msg.
+        Otherwise, create a new user and redirect to welcome.
+        """
         u = User.by_name(self.username)
         if u:
             msg = 'That user already exists.'
             self.render('signup-form.html', error_username=msg)
-        # otherwise, create a new user and redirect to login welcome
         else:
             u = User.register(self.username, self.password, self.email)
             u.put()
@@ -418,13 +478,21 @@ class Register(Signup):
             self.redirect('/welcome')
 
 
-# Login class, uses handler and its methods to login a user
 class Login(Handler):
+    """
+    Login: uses Handler and its methods to login a user
+    """
     def get(self):
+        """
+        get: renders login form and displays any error msgs
+        """
         error = self.request.get('error')
         self.render('login-form.html', error=error)
 
     def post(self):
+        """
+        post: redirects to welcome, or back to login with error msg.
+        """
         username = self.request.get('username')
         password = self.request.get('password')
 
@@ -437,51 +505,57 @@ class Login(Handler):
             self.render('login-form.html', error=msg)
 
 
-# Logout class, uses handler and its methods to logout a user
 class Logout(Handler):
+    """
+    Logout: uses Handler and its methods to logout a user
+    """
     def get(self):
-        ''' saved for later updates
-        logged_in.remove(str(self.user.name))
-        '''
+        """
+        get: logs user out and redirects to login
+        """
         self.logout()
         self.redirect('/login')
 
 
-# Welcome class, uses handler and its methods to welcome a user
 class Welcome(Handler):
+    """
+    Welcome: uses Handler and its methods to welcome a user.
+    """
     def get(self):
+        """
+        get: If logged in, render welcome. If not, redirect to login.
+        """
         if self.user:
             self.render('welcome.html', username=self.user.name)
-            ''' saved for future updates
-            logged_in.append(str(self.user.name))
-            '''
-        # try to navigate to this page while logged out, and it redirects you
         else:
             self.redirect('/login')
 
 
-# EditPost class, uses handler and its methods to edit posts
 class EditPost(Handler):
+    """
+    EditPost: uses Handler and its methods to edit posts
+    """
     def get(self, post_id):
-        # checks if user
+        """
+        get: Checks if user. If so, check if that post was created by that
+        user. If not, redirect to that post and display error message. If not
+        logged in, redirects to login.
+        """
         if self.user:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
-            # if so, check if that post was created by that user
             if post.user_id == self.user.key().id():
                 self.render("editpost.html", subject=post.subject,
                             content=post.content)
-            # if not, redirect to that post and display error message
             else:
-                self.redirect("/blog/" + post_id + "?error=Only the creator "+
+                self.redirect("/blog/" + post_id + "?error=Only the creator " +
                               "can edit a post")
-        # if not, redirects to login
         else:
             self.redirect("/login?error=Log in to edit post")
 
     def post(self, post_id):
         if not self.user:
-            self.redirect('/blog')
+            return self.redirect('/blog')
 
         subject = self.request.get('subject')
         content = self.request.get('content')
@@ -500,64 +574,82 @@ class EditPost(Handler):
 
 
 class DeletePost(Handler):
+    """
+    DeletePost: uses Handler and its helper classes to delete posts
+    """
     def get(self, post_id):
+        """
+        get: If logged in, allow the creator of a post to delete it. If the
+        user isn't the creator of the post, display an error msg. If browser
+        isn't logged in, redirect to login.
+        """
         if self.user:
             key = db.Key.from_path('Post', int(post_id), parent=blog_key())
             post = db.get(key)
-            # only allow the creator of a post to delete it
             if post.user_id == self.user.key().id():
                 post.delete()
                 self.redirect("/blog/?")
-            # if the user isn't the creator, display an error msg
             else:
                 self.redirect("/blog/" + post_id + "?error=Only the " +
                               "creator can delete their post.")
-        # redirect to login if not a user
         else:
             self.redirect("/login?error=Log in to delete posts...")
 
 
 class DeleteComment(Handler):
+    """
+    DeleteComment: uses Handler and its helper classes to delete comments
+    """
     def get(self, post_id, comment_id):
+        """
+        get: If the comment user id is the same as the logged in user, delete
+        the comment. If not, display an error msg. If not logged in, redirect
+        to login with an error msg.
+        """
         if self.user:
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             c = db.get(key)
-            # if the comment user id is the sam as the logged in user, delete
             if c.user_id == self.user.key().id():
                 c.delete()
                 self.redirect("/blog/"+post_id+"?deleted_comment_id=" +
                               comment_id)
-            # if not, display an error
             else:
                 self.redirect("/blog/" + post_id + "?error=That is " +
                               "not your comment")
-        # if not logged in, redirect to login with error msg
         else:
             self.redirect("/login?error=You must log in to " +
                           "delete your comment")
 
 
 class EditComment(Handler):
+    """
+    EditComment: uses Handler and its helper classes to edit comments
+    """
     def get(self, post_id, comment_id):
+        """
+        get: If the user id matches the comment's creator, allow editing.
+        Otherwise, display an error msg. Redirect to login page if the browser
+        is not logged in.
+        """
         if self.user:
             key = db.Key.from_path('Comment', int(comment_id),
                                    parent=blog_key())
             c = db.get(key)
-            # if the user id matches the comment's creator, allow edit
             if c.user_id == self.user.key().id():
                 self.render("editcomment.html", comment=c.comment)
-            # otherwise display the error msg
             else:
                 self.redirect("/blog/" + post_id +
                               "?error=That is not your comment")
-        # send to login page if the browser is not logged in
         else:
             self.redirect("/login?error=Please log in to " +
                           "edit a post")
 
     def post(self, post_id, comment_id):
-        # if you try to post a comment without being logged in, redirect login
+        """
+        post: If you try to post a comment without being logged in, redirect to
+        login.
+        """
         if not self.user:
             self.redirect('/login?error=Please log in...')
 
