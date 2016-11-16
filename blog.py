@@ -565,8 +565,12 @@ class EditPost(Handler):
             post = db.get(key)
             post.subject = subject
             post.content = content
-            post.put()
-            self.redirect('/blog/%s' % post_id)
+            if post.user_id == self.user.key().id():
+                post.put()
+                self.redirect('/blog/%s' % post_id)
+            else:
+                self.redirect("/blog/" + post_id + "?error=Only the creator " +
+                              "can edit a post")
         else:
             error = "There must be a subject and content..."
             self.render("editpost.html", subject=subject,
@@ -651,7 +655,7 @@ class EditComment(Handler):
         login.
         """
         if not self.user:
-            self.redirect('/login?error=Please log in...')
+            return self.redirect('/login?error=Please log in...')
 
         comment = self.request.get('comment')
 
@@ -660,8 +664,12 @@ class EditComment(Handler):
                                    int(comment_id), parent=blog_key())
             c = db.get(key)
             c.comment = comment
-            c.put()
-            self.redirect('/blog/%s' % post_id)
+            if c.user_id == self.user.key().id():
+                c.put()
+                self.redirect('/blog/%s' % post_id)
+            else:
+                self.redirect("/blog/" + post_id +
+                              "?error=That is not your comment")
         else:
             error = "subject and content, please!"
             self.render("editpost.html", subject=subject,
